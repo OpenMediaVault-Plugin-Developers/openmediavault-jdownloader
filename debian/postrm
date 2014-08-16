@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+case "$1" in
+    purge)
+        rm -Rf /opt/jdownloader & >/dev/null
+
+        if [ -f "/var/run/jdownloader/jdownloader.pid" ]; then
+            PID=$(cat /var/run/jdownloader/jdownloader.pid);
+            kill -0 $PID 2>/dev/null;
+
+            if [ $? -eq 0 ]; then
+                kill -9 $PID;
+                rm -Rf /var/run/jdownloader
+            fi
+        fi
+
+        omv_config_delete "//services/jdownloader"
+
+        if [ -d "/opt/jdownloader" ]; then
+            rm -Rf /opt/jdownloader/* &>/dev/null
+        fi
+
+        userdel -r jdownloader
+
+        if [ ! -d /opt ]; then
+            mkdir /opt
+            chmod 775 /opt
+        fi
+    ;;
+
+        remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument '$1'" >&2
+        exit 1
+    ;;
+esac
+
+exit 0

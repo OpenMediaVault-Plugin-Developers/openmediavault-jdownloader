@@ -1,0 +1,19 @@
+Source: openmediavault-jdownloader
+Section: misc
+Priority: optional
+Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
+Build-Depends: debhelper (>= 9 )
+Standards-Version: 3.9.3
+
+Package: openmediavault-jdownloader
+Architecture: all
+Depends: ${misc:Depends}, openmediavault (>= 0.6), default-jre | java6-runtime | java7-runtime
+Description: OpenMediaVault Jdownloader plugin
+ JDownloader is open source, platform independent and written completely in
+ Java. It simplifies downloading files from One-Click-Hosters like
+ Rapidshare.com or Megaupload.com \- not only for users with a premium account
+ but also for users who don't pay. It offers downloading in multiple parallel
+ streams, captcha recognition, automatic file extraction and much more.
+ Additionally, many "link encryption" sites are supported \- so you just paste
+ the "encrypted" links and JDownloader does the rest. JDownloader can import
+ CCF, RSDF and DLC files.

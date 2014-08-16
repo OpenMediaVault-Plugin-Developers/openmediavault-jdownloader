@@ -1,0 +1,48 @@
+#!/bin/sh
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+USERFILE="/opt/jdownloader/cfg/org.jdownloader.api.myjdownloader.MyJDownloaderSettings.json"
+
+userchange() {
+    if [ -f $USERFILE ]; then
+        rm -Rf $USERFILE
+    fi
+    # Create new config
+    user_name=$(omv_config_get "//services/jdownloader/jdusername")
+    pass_word=$(omv_config_get "//services/jdownloader/jdpassword")
+    cat > $USERFILE <<EOF
+{
+  "manualremoteport" : 3129,
+  "connectip" : "api.jdownloader.org",
+  "autoconnectenabledv2" : true,
+  "clientconnectport" : 80,
+  "directconnectmode" : "LAN",
+  "uniquedeviceid" : "default",
+  "lastupnpport" : 0,
+  "cesblackorwhitelisttype" : "BLACKLIST",
+  "uniquedeviceidsalt" : "default",
+  "manuallocalport" : 3129,
+  "cesenabled" : true,
+  "lastlocalport" : 8188,
+  "email" : "${user_name}",
+  "latesterror" : "NONE",
+  "password" : "${pass_word}",
+  "devicename" : "JDownloader@jdownloader"
+}
+EOF
+chmod 777 $USERFILE
+chown jdownloader:users $USERFILE
+
+}
+
+case "$2" in
+  userchange)
+    userchange
+    ;;
+  *)
+    exit 1
+esac

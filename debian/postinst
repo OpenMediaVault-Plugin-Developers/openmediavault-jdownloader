@@ -1,0 +1,60 @@
+#!/bin/sh
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+case "$1" in
+    configure)
+        if ! getent passwd jdownloader >/dev/null 2>&1; then
+            echo "Adding jdownloader user..."
+            useradd --create-home --groups users --no-user-group --shell /usr/sbin/nologin jdownloader
+            insserv -d jdownloader
+        else
+            echo "jdownloader user already exists."
+        fi
+
+        if [ -e /var/run/jdownloader ]; then
+            echo "Cleaning old pid file..."
+            rm -Rf /var/run/jdownloader
+        fi
+		
+        if [ ! -e /opt/jdownloader/JDownloader.jar ]; then
+            echo "Extracting archive..."
+            tar zxvf /opt/jdownloader/jdownloader.tar.gz -C /
+            rm -Rf /opt/jdownloader/jdownloader.tar.gz
+            chmod 775 /opt/jdownloader -R
+            chown jdownloader:users /opt/jdownloader -R
+        fi
+
+        chmod 775 /opt
+        chown root:users /opt
+
+        if ! omv_config_exists "/config/services/jdownloader"; then
+            echo "Initial configuration."
+            object="<enable>0</enable>"
+            object="${object}<showtab>0</showtab>"
+            object="${object}<jderror></jderror>"
+            object="${object}<uniqueid></uniqueid>"
+            omv_config_add_element "/config/services" "jdownloader" "${object}" true
+        fi
+        
+        omv_install_fixperms
+
+        # Activate package triggers. These triggers are only set during the
+        # package installation.
+        dpkg-trigger update-fixperms
+        dpkg-trigger update-locale
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument" >&2
+        exit 1
+    ;;
+esac
+
+exit 0
