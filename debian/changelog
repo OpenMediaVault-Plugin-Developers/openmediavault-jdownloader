@@ -1,3 +1,9 @@
+openmediavault-jdownloader (1.0.1) unstable; urgency=low
+
+  * Remove Couchpotato file
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 17 Aug 2014 06:01:88 -0500
+
 openmediavault-jdownloader (1.0.0) unstable; urgency=low
 
   * Initial release
