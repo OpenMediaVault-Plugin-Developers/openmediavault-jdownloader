@@ -1,4 +1,4 @@
-openmediavault-jdownloader2
+openmediavault-jdownloader
 ========================
 
 jdownloader2 plugin
