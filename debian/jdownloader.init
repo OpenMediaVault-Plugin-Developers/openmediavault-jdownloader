@@ -21,7 +21,8 @@ PID_PATH="/var/run/jdownloader"
 PID_FILE="${PID_PATH}/jdownloader.pid"
 
 # Java Command
-JAVA="/usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java"
+#JAVA="/usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java"
+JAVA="/usr/bin/java"
 
 # Run as user
 RUN_AS="jdownloader"

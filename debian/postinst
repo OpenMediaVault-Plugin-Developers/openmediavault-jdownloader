@@ -37,9 +37,18 @@ case "$1" in
             object="${object}<showtab>0</showtab>"
             object="${object}<jderror></jderror>"
             object="${object}<uniqueid></uniqueid>"
+            object="<download.sharedfolderref></download.sharedfolderref>"
+            object="${object}<download-dir></download-dir>"
             omv_config_add_element "/config/services" "jdownloader" "${object}" true
         fi
-        
+
+        if ! omv_config_exists "/config/services/jdownloader/download.sharedfolderref"; then
+            echo "Extra configuration."
+            object="<download.sharedfolderref></download.sharedfolderref>"
+            object="${object}<download-dir></download-dir>"
+            omv_config_add_element "/config/services" "jdownloader" "${object}" true
+        fi
+
         omv_install_fixperms
 
         # Activate package triggers. These triggers are only set during the

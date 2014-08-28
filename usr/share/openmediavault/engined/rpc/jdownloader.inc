@@ -30,6 +30,10 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
 {
     private $jdownloaderSettingsFile = "/opt/jdownloader/cfg/org.jdownloader.api.myjdownloader.MyJDownloaderSettings.json";
 
+    private $jdownloaderLocationFile = "/opt/jdownloader/cfg/org.jdownloader.settings.GeneralSettings.json";
+
+    private $jdownloaderBuildFile = "/opt/jdownloader/build.json";
+
     private function getPluginName()
     {
         return strtolower($this->getName());
@@ -54,6 +58,7 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
     {
         $this->registerMethod("getSettings");
         $this->registerMethod("setSettings");
+        $this->registerMethod("doUpdate");
     }
 
     public function getSettings($params, $context)
@@ -73,8 +78,33 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             );
         }
 
-        $object["enable"]  = boolval($object["enable"]);
-        $object["showtab"] = boolval($object["showtab"]);
+        $jdbuilddate = "awaiting info";
+        $jdversion   = "awaiting info";
+        if (file_exists($this->jdownloaderBuildFile)) {
+            $string       = file_get_contents($this->jdownloaderBuildFile);
+            $json_c       = json_decode($string,true);
+            $jdbuilddate  = $json_c['buildDate'];
+            $jdversion    = $json_c['JDownloaderRevision'];
+        }
+
+        // Get current info as set in Jdownloader config file
+        $uniquedeviceid = "awaiting info";
+        $jderror = "awaiting info";
+        if (file_exists($this->jdownloaderSettingsFile)) {
+            $string = file_get_contents($this->jdownloaderSettingsFile);
+            $json_a = json_decode($string,true);
+            $uniquedeviceid = $json_a['uniquedeviceid'];
+            $jderror = $json_a['latesterror'];
+        }
+
+        $object["enable"]                   = boolval($object["enable"]);
+        $object["showtab"]                  = boolval($object["showtab"]);
+        $object["jdbuilddate"]              = $jdbuilddate;
+        $object["jdversion"]                = $jdversion;
+        $object["uniquedeviceid"]           = $uniquedeviceid;
+        $object["jderror"]                  = $jderror;
+        $object["download.sharedfolderref"] = $object["download.sharedfolderref"];
+        $object["download-dir"]             = $object["download-dir"];
 
         return $object;
     }
@@ -92,10 +122,12 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             '{
                 "type"       : "object",
                 "properties" : {
-                    "enable"      : { "type" : "boolean" },
-                    "showtab"     : { "type" : "boolean" },
-                    "jdusername"  : { "type" : "string" },
-                    "jdpassword"  : { "type" : "string" }
+                    "enable"                      : { "type" : "boolean" },
+                    "showtab"                     : { "type" : "boolean" },
+                    "jdusername"                  : { "type" : "string" },
+                    "jdpassword"                  : { "type" : "string" },
+                    "download.sharedfolderref"    : {' . $GLOBALS["OMV_JSONSCHEMA_UUID_NONE"] . '},
+                    "download-dir"                : { "type" : "string" }
                 }
             }'
         );
@@ -110,24 +142,52 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             );
         }
 
+        $downloadFolderRef = $oldObject["download.sharedfolderref"];
+        $msg = "No directory for downloads set, please set one before enabling the service";
+
+        if ($params["enable"] === true && empty($downloadFolderRef)) {
+            throw new OMVException(OMVErrorMsg::E_CONFIG_SAVE_FAILED, $msg);
+        }
+
         // Get current info as set in Jdownloader config file
         $uniquedeviceid = "awaiting info";
-        $jderror = "awaiting info";
         if (file_exists($this->jdownloaderSettingsFile)) {
             $string = file_get_contents($this->jdownloaderSettingsFile);
             $json_a = json_decode($string,true);
             $uniquedeviceid = $json_a['uniquedeviceid'];
-            $jderror = $json_a['latesterror'];
+
+            // Change valuse
+            $json_a['email']     = $params["jdusername"];
+            $json_a['password']  = $params["jdpassword"];
+
+            file_put_contents($this->jdownloaderSettingsFile, json_encode($json_a));
+        }
+
+        if (file_exists($this->jdownloaderLocationFile)) {
+            $string = file_get_contents($this->jdownloaderLocationFile);
+            $json_b = json_decode($string,true);
+            // Get the absolute shared folder path.
+            $jdpath = OMVRpc::exec("ShareMgmt", "getPath", array(
+                "uuid" => $params["download.sharedfolderref"]), $context);
+
+            // Change valuse
+            $json_b['defaultdownloadfolder'] = $jdpath . "/" . $params["download-dir"];
+
+            file_put_contents($this->jdownloaderLocationFile, json_encode($json_b));
+            if (!file_exists($json_b['defaultdownloadfolder'])) {
+                mkdir($json_b['defaultdownloadfolder'], 0777, true);
+            }
         }
 
 
         $object = array(
-            "enable"      => array_boolval($params, "enable"),
-            "showtab"     => array_boolval($params, "showtab"),
-            "jdusername"  => $params["jdusername"],
-            "jdpassword"  => $params["jdpassword"],
-            "uniqueid"    => $uniquedeviceid,
-            "jderror"     => $jderror
+            "enable"                     => array_boolval($params, "enable"),
+            "showtab"                    => array_boolval($params, "showtab"),
+            "jdusername"                 => $params["jdusername"],
+            "jdpassword"                 => $params["jdpassword"],
+            "uniqueid"                   => $uniquedeviceid,
+            "download.sharedfolderref"   => $params["download.sharedfolderref"],
+            "download-dir"               => $params["download-dir"]
         );
 
         if (false === $xmlConfig->replace($this->getXPath(), $object)) {
@@ -137,17 +197,6 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             );
         }
 
-        if ($oldObject["jdusername"] != $object["jdusername"] OR $oldObject["jdpassword"] != $object["jdpassword"]) {
-            $cmd = sprintf("omv-mkconf %s userchange 2>&1", $this->getPluginName());
-            if (0 !== $this->exec($cmd, $output)) {
-                throw new OMVException(
-                    OMVErrorMsg::E_EXEC_FAILED,
-                    $cmd,
-                    implode("\n", $output)
-                );
-            }
-        }
-
         $dispatcher = &OMVNotifyDispatcher::getInstance();
         $dispatcher->notify(
             OMV_NOTIFY_MODIFY,
@@ -155,6 +204,54 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             $object
         );
         return $object;
+    }
+
+    public function doUpdate($params, $context)
+    {
+        global $xmlConfig;
+
+        // Validate the RPC caller context.
+        $this->validateMethodContext($context, array(
+            "role" => OMV_ROLE_ADMINISTRATOR
+        ));
+
+        // Create a background process.
+        $bgStatusFilename = $this->createBgProcStatus();
+        $pid = $this->fork();
+
+        // Parent process.
+        if ($pid > 0) {
+            $this->initializeBgProcStatus($bgStatusFilename, $pid);
+            return $bgStatusFilename;
+        }
+
+        // Get the Jdownloader module
+        $moduleMgr = &OMVModuleMgr::getInstance();
+        $jdownloaderModule = $moduleMgr->getModule($this->getName());
+
+        // Child process.
+        try {
+            $jdownloaderModule->stopService();
+            $bgOutputFilename = $this->createBgProcOutput();
+            $this->updateBgProcStatus(
+                $bgStatusFilename,
+                "outputfilename",
+                $bgOutputFilename
+            );
+
+            $cmd = "omv-mkconf jdownloader update 2>&1";
+
+            $this->exec($cmd, $output, $bgOutputFilename);
+            $this->finalizeBgProcStatus($bgStatusFilename, $output);
+            //$jdownloaderModule->stopService();
+            $jdownloaderModule->startService();
+            exit(0);
+        } catch (Exception $e) {
+            $this->finalizeBgProcStatus($bgStatusFilename, "", $e);
+            //$jdownloaderModule->stopService();
+            $jdownloaderModule->startService();
+            exit(1);
+        }
     }
 }
 
