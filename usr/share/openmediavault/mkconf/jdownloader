@@ -16,32 +16,19 @@ getprocess=`ps -ef|grep java|grep update`
 if [ "$getprocess" != "" ]; then
     set $getprocess
     pid=$2
-    #echo "found pid: "$pid
     kill -9 $pid
-else
-    #echo "No other update process found"
 fi
 
-#ps -ef|grep java|grep JDownloader.jar
-
-#sleep 2
 echo "Starting Jdownloader update.";
 cd /opt/jdownloader
-#sudo -u jdownloader /usr/bin/java -Dghostawt.library.path=/opt/jdownloader/libs/ghostawt/linux64 -jar JDownloader.jar -forceupdate -selfupdate
 sudo -u jdownloader /usr/bin/java -Dghostawt.library.path=/opt/jdownloader/libs/ghostawt/linux64 -jar /opt/jdownloader/tmp/update/self/JDU/JDownloader.jar /opt/jdownloader -selfupdate
-#sleep 5
-
-ps -ef|grep java
 
 getprocess=`ps -ef|grep java|grep update`
 
 if [ "$getprocess" != "" ]; then
     set $getprocess
     pid=$2
-    #echo "found pid: "$pid
     kill -9 $pid
-else
-    #echo "No other update process found"
 fi
 
 chown jdownloader:users /opt/jdownloader -R

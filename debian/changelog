@@ -1,3 +1,9 @@
+openmediavault-jdownloader (1.0.3) unstable; urgency=low
+
+  * Fix updater script
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 29 Aug 2014 04:43:08 -0500
+
 openmediavault-jdownloader (1.0.2) unstable; urgency=low
 
   * Code cleanup
