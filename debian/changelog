@@ -9,13 +9,13 @@ openmediavault-jdownloader (1.0.2) unstable; urgency=low
   * Code cleanup
   * Added extra info panel
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Thur, 28 Aug 2014 06:01:88 -0500
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Thu, 28 Aug 2014 06:01:08 -0500
 
 openmediavault-jdownloader (1.0.1) unstable; urgency=low
 
   * Remove Couchpotato file
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 17 Aug 2014 06:01:88 -0500
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 17 Aug 2014 06:01:08 -0500
 
 openmediavault-jdownloader (1.0.0) unstable; urgency=low
 
