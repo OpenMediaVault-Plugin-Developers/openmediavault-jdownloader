@@ -7,7 +7,7 @@ Standards-Version: 3.9.3
 
 Package: openmediavault-jdownloader
 Architecture: all
-Depends: ${misc:Depends}, openmediavault (>= 0.6), default-jre | java6-runtime | java7-runtime
+Depends: ${misc:Depends}, openmediavault (>= 0.6), java7-runtime
 Description: OpenMediaVault Jdownloader plugin
  JDownloader is open source, platform independent and written completely in
  Java. It simplifies downloading files from One-Click-Hosters like

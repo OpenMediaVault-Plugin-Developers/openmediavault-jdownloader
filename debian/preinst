@@ -1,0 +1,21 @@
+#! /bin/sh
+
+set -e
+umask 022
+
+# Remove the init script.
+# upstart jobs
+if [ -e "/etc/init.d/jdownloader" ] && [ ! -L "/etc/init.d/jdownloader" ]; then
+	invoke-rc.d jdownloader stop
+	if [ "`md5sum \"/etc/init.d/jdownloader\" | sed -e \"s/ .*//\"`" != \
+	     "`dpkg-query -W -f='${Conffiles}' openmediavault-jdownloader | sed -n -e \"\\\\' /etc/init.d/jdownloader '{s/ obsolete$//;s/.* //p}\"`" ]
+	then
+		echo "Replacing obsolete conffile /etc/init.d/jdownloader"
+		rm -f "/etc/init.d/jdownloader"
+	fi
+	update-rc.d jdownloader remove
+fi
+
+#DEBHELPER#
+
+exit 0

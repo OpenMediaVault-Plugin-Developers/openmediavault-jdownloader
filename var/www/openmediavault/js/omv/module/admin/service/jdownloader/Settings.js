@@ -52,16 +52,6 @@ Ext.define("OMV.module.admin.service.jdownloader.Settings", {
     rpcGetMethod : "getSettings",
     rpcSetMethod : "setSettings",
 
-    //plugins      : [{
-    //    ptype        : "linkedfields",
-    //    correlations : [{
-    //        name       : [
-    //            "uniqueid",
-    //        ],
-    //        properties : "!show"
-    //    }]
-    //}],
-
     getFormItems : function() {
         var me = this;
         return [{

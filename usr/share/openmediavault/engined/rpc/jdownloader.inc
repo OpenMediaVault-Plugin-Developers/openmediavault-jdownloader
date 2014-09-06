@@ -132,17 +132,7 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             }'
         );
 
-        // Get existing configuration object
-        $oldObject = $xmlConfig->get($this->getXPath());
-
-        if (is_null($oldObject)) {
-            throw new OMVException(
-                OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
-                $this->getXPath()
-            );
-        }
-
-        $downloadFolderRef = $oldObject["download.sharedfolderref"];
+        $downloadFolderRef = $params["download.sharedfolderref"];
         $msg = "No directory for downloads set, please set one before enabling the service";
 
         if ($params["enable"] === true && empty($downloadFolderRef)) {

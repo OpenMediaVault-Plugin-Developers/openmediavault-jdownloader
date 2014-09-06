@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          jdownloader
 # Required-Start:    $local_fs $network $remote_fs
@@ -10,110 +10,125 @@
 # Short-Description: Jdownloader daemon
 ### END INIT INFO
 
-# Using the lsb functions to perform the operations.
-. /lib/lsb/init-functions
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+#/etc/init.d/jdownloader
+SCRIPTNAME=/etc/init.d/jdownloader
 
 # Name of application
-NAME=Jdownloader
+NAME="Jdownloader"
 
 # Path to store PID file
-PID_PATH="/var/run/jdownloader"
-PID_FILE="${PID_PATH}/jdownloader.pid"
+PID_PATH=/var/run/jdownloader
+PID_FILE=$PID_PATH/jdownloader.pid
 
 # Java Command
-#JAVA="/usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java"
-JAVA="/usr/bin/java"
+JAVA=/usr/bin/java
 
 # Run as user
 RUN_AS="jdownloader"
 
 # Jdownloader install location
-JD_PATH="/opt/jdownloader"
+JD_PATH=/opt/jdownloader
+JD_ARGS='-Dghostawt.library.path=libs/ghostawt/linux64 -cp "./*:libs/*:libs/ghostawt/*" ghostawt.GhostRunner org.jdownloader.startup.Main'
 
 # Check pid path is created,
 if [ ! -d $PID_PATH ]; then
     mkdir -p $PID_PATH
-    chown $RUN_AS
+    chown 755 $RUN_AS -R
 fi
 
+# Exit if the package is not installed
+[ -x "$JD_PATH/JDownloader.jar" -a -x "$JAVA" ] || exit 0
 
-#working start line
-#start-stop-daemon --start --quiet --background --user root --make-pidfile --pidfile $PID_FILE --chdir /opt/jdownloader --exec /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java -- -Dghostawt.library.path=/opt/jdownloader2/libs/ghostawt/linux64 -cp "./*:libs/*:/opt/jdownloader2/libs/ghostawt/*" ghostawt.GhostRunner org.jdownloader.startup.Main
+# Using the lsb functions to perform the operations.
+. /lib/lsb/init-functions
+
+
+is_alive()
+{
+   if [ -e $PID_FILE ]; then
+      PID=`cat $PID_FILE` > /dev/null 2>&1
+      if ! kill -0 $PID > /dev/null 2>&1; then
+          return 2
+      fi
+      return 0
+   fi
+   return 1
+}
+
+do_start()
+{
+   is_alive
+   RETVAL="$?"
+   if [ $RETVAL != 0 ]; then
+       rm -f $PID_FILE
+       CMD="start-stop-daemon --start --background --quiet --pidfile $PID_FILE --make-pidfile \
+       --exec $JAVA --chdir /opt/jdownloader --chuid $RUN_AS --user $RUN_AS --umask 0 -- $JD_ARGS"
+
+       eval $CMD
+       return $?
+   fi
+
+   [ "$RETVAL" = "0" ] && return 2
+}
+
+do_stop()
+{
+   start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --user $RUN_AS --pidfile $PID_FILE
+   RETVAL="$?"
+
+   [ "$RETVAL" = "2" ] && return 2
+
+   rm -f $PID_FILE
+
+   [ "$RETVAL" = "0" ] && return 0 || return 1
+}
 
 case "$1" in
   start)
-    # Checked the PID file exists and check the actual status of process
-
-    if [ -e $PID_FILE ]; then
-        status_of_proc -p $PID_FILE $DAEMON "$NAME process" >/dev/null && status="0" || status="$?" >/dev/null
-        # If the status is SUCCESS then dont need to start again.
-        if [ $status = "0" ]; then
-            echo "$NAME process is already running"
-            exit # Exit
-        fi
-    fi
-
-    # Start daemons.
-
-    echo -n "Starting Jdownloader daemon: "
-    echo
-    start-stop-daemon --start --oknodo --background --user $RUN_AS --make-pidfile --pidfile $PID_FILE --chdir $JD_PATH --startas $JAVA --chuid $RUN_AS -- -Dghostawt.library.path=$JD_PATH/libs/ghostawt/linux64 -cp "./*:libs/*:${JD_PATH}/libs/ghostawt/*" ghostawt.GhostRunner org.jdownloader.startup.Main
-    #start-stop-daemon
-    RETVAL=$?
-
-    if [ $RETVAL = 0 ]
-    then
-        echo "done."
-    else
-        echo "failed. See error code for more information."
-    fi
-    #return $RETVAL
-    echo
-    ;;
+   echo "Starting Jdownloader daemon: " >&2
+   do_start
+   case "$?" in
+      0|1) echo "Started Jdownloader daemon" >&2
+      ;;
+      2) echo "Already running" >&2
+      ;;
+   esac
+   ;;
   stop)
-    # Stop daemons.
-    echo -n "Shutting down Jdownloader daemon: "
-    echo
-    start-stop-daemon --stop --oknodo --user $RUN_AS --pidfile $PID_FILE --retry 5
-    RETVAL=$?
-    if [ $RETVAL = 0 ]
-    then
-        echo "done."
-        # Do clean-up works here like removing pid files from /var/run, etc.
-        if [ -f "/var/run/jdownloader/jdownloader.pid" ]; then
-            rm -Rf var/run/jdownloader/jdownloader.pid
-        fi
-    else
-        echo "failed. See error code for more information."
-    fi
-    #return $RETVAL
-    echo
-    ;;
-  status)
-    # Get status
-    if [ -e $PID_FILE ]; then
-        status_of_proc -p $PID_FILE $DAEMON "$NAME process" >/dev/null && status="0" || status="$?"
-        # If the status is SUCCESS then dont need to start again.
-        if [ $status = "0" ]; then
-              echo "$NAME process is running"
-              exit # Exit
-        else
-            echo "$NAME process is not running"
-            exit # Exit
-        fi
-    else
-        echo "$NAME process is not running"
-        exit # Exit
-    fi
-    ;;
-  restart)
-    $0 stop
-    $0 start
-    ;;
-
+   echo "Stopping Jdownloader daemon: " >&2
+   do_stop
+   case "$?" in
+      0|1) echo "Stopped Jdownloader daemon" >&2
+      ;;
+      2) echo "Other Stopping Jdownloader daemon: " >&2
+      ;;
+   esac
+   ;;
+  restart|force-reload)
+   echo "Re-starting Jdownloader daemon: " >&2
+   do_stop
+   case "$?" in
+     0|1)
+      do_start
+      case "$?" in
+         0) echo "Re-started OK" >&2
+      ;;
+         1) echo "log_end_msg 1" >&2
+      ;;
+         *) echo "log_end_msg 1" >&2
+      ;;
+      esac
+      ;;
+     *)
+      # Failed to stop
+      echo "Failed to stop" >&2
+      ;;
+   esac
+   ;;
   *)
-    echo $"Usage: $0 {start|stop|status|restart}"
-    exit 1
+   echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+   exit 3
+   ;;
 esac
-
-exit 0
