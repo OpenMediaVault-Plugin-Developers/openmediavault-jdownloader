@@ -3,7 +3,7 @@ openmediavault-jdownloader (1.0.4) unstable; urgency=low
   * Change init.d script
   * Allow blank download folder
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 06 Sep 2014 015:04:00 -0500
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 06 Sep 2014 15:04:00 -0500
 
 openmediavault-jdownloader (1.0.3) unstable; urgency=low
 
