@@ -35,7 +35,8 @@ JD_ARGS='-Dghostawt.library.path=libs/ghostawt/linux64 -cp "./*:libs/*:libs/ghos
 # Check pid path is created,
 if [ ! -d $PID_PATH ]; then
     mkdir -p $PID_PATH
-    chown 755 $RUN_AS -R
+    chmod 755 $PID_PATH -R
+    chown $RUN_AS:users $PID_PATH -R
 fi
 
 # Exit if the package is not installed
