@@ -1,5 +1,11 @@
 openmediavault-jdownloader (1.0.4) unstable; urgency=low
 
+  * Delete preinst file
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 14 Sep 2014 05:04:00 -0500
+
+openmediavault-jdownloader (1.0.4) unstable; urgency=low
+
   * Change init.d script
   * Allow blank download folder
 
