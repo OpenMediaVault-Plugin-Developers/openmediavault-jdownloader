@@ -1,6 +1,7 @@
 openmediavault-jdownloader (1.0.5) unstable; urgency=low
 
   * Delete preinst file
+  * Latest jdownloader files
 
  -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 14 Sep 2014 05:04:00 -0500
 
