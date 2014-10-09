@@ -30,7 +30,7 @@ RUN_AS="jdownloader"
 
 # Jdownloader install location
 JD_PATH=/opt/jdownloader
-JD_ARGS='-Dghostawt.library.path=libs/ghostawt/linux64 -cp "./*:libs/*:libs/ghostawt/*" ghostawt.GhostRunner org.jdownloader.startup.Main'
+JD_ARGS='-Djava.awt.headless=true -jar JDownloader.jar'
 
 # Check pid path is created,
 if [ ! -d $PID_PATH ]; then
@@ -40,20 +40,26 @@ if [ ! -d $PID_PATH ]; then
 fi
 
 # Exit if the package is not installed
-[ -x "$JD_PATH/JDownloader.jar" -a -x "$JAVA" ] || exit 0
+[ -e "${JD_PATH}/JDownloader.jar" ] || exit 0
 
 # Using the lsb functions to perform the operations.
 . /lib/lsb/init-functions
 
-
 is_alive()
 {
+   line=$(ps aux | grep [J]Downloader)
    if [ -e $PID_FILE ]; then
       PID=`cat $PID_FILE` > /dev/null 2>&1
       if ! kill -0 $PID > /dev/null 2>&1; then
           return 2
       fi
       return 0
+   else
+      if [ -z "$line" ]; then
+         return 0
+      else
+         return 2
+      fi
    fi
    return 1
 }
@@ -76,20 +82,21 @@ do_start()
 
 do_stop()
 {
-   start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --user $RUN_AS --pidfile $PID_FILE
-   RETVAL="$?"
-
-   [ "$RETVAL" = "2" ] && return 2
-
-   rm -f $PID_FILE
-
-   [ "$RETVAL" = "0" ] && return 0 || return 1
+   line=$(ps aux | grep [J]Downloader |awk '{print $2}')
+   #start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --user $RUN_AS --pidfile $PID_FILE
+   if [ -z "$line" ]; then
+      return 3
+   else
+      kill -9 $line > /dev/null 2>&1
+      return 2
+   fi
+   return 1
 }
 
 case "$1" in
   start)
    echo "Starting Jdownloader daemon: " >&2
-   do_start
+   do_start;
    case "$?" in
       0|1) echo "Started Jdownloader daemon" >&2
       ;;
@@ -99,12 +106,13 @@ case "$1" in
    ;;
   stop)
    echo "Stopping Jdownloader daemon: " >&2
-   do_stop
+   do_stop;
    case "$?" in
       0|1) echo "Stopped Jdownloader daemon" >&2
       ;;
       2) echo "Other Stopping Jdownloader daemon: " >&2
       ;;
+      *) echo "Not running so not Stopping Jdownloader daemon: " >&2
    esac
    ;;
   restart|force-reload)

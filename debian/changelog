@@ -1,3 +1,9 @@
+openmediavault-jdownloader (1.0.6) unstable; urgency=low
+
+  * Use headless method
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Thu, 09 Oct 2014 05:04:00 -0500
+
 openmediavault-jdownloader (1.0.5) unstable; urgency=low
 
   * Delete preinst file
