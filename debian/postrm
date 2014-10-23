@@ -22,7 +22,7 @@ case "$1" in
         omv_config_delete "//services/jdownloader"
 
         if [ -d "/opt/jdownloader" ]; then
-            rm -Rf /opt/jdownloader/* &>/dev/null
+            rm -Rf /opt/jdownloader &>/dev/null
         fi
 
         userdel -r jdownloader

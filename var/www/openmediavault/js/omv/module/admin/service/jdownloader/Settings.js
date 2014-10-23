@@ -89,125 +89,98 @@ Ext.define("OMV.module.admin.service.jdownloader.Settings", {
                 defaults : {
                     labelSeparator:""
                 },
-                items    : [{
-                    xtype      : "textfield",
-                    name       : "jdusername",
-                    fieldLabel : _("Email address"),
-                    allowBlank : false,
-                    vtype      : "email",
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Email address used on my.jdownloader.org.")
-                    }]
-                },{
-                    xtype      : "passwordfield",
-                    name       : "jdpassword",
-                    fieldLabel : _("Password"),
-                    allowBlank : false,
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Password used on my.jdownloader.org.")
-                    }]
-                },{
+            items    : [{
+                xtype      : "textfield",
+                name       : "jdusername",
+                fieldLabel : _("Email address"),
+                allowBlank : false,
+                vtype      : "email",
+                plugins    : [{
                     ptype : "fieldinfo",
-                    xtype      : "sharedfoldercombo",
-                    name       : "download.sharedfolderref",
-                    fieldLabel : _("Shared folder"),
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Make sure the group 'users' has read/write access to the shared folder.")
-                    }]
-                },{
-                    xtype      : "textfield",
-                    name       : "download-dir",
-                    fieldLabel : _("Directory"),
-                    allowBlank : true,
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Directory to store downloads.")
-                    }]
+                    text  : _("Email address used on my.jdownloader.org.")
                 }]
-                },{
-                    xtype    : "fieldset",
-                    title    : _("Jdownloader Infomation Panel"),
-                    defaults : {
-                        labelSeparator:""
-                    },
-                items    : [{
-                    xtype       : "textfield",
-                    name        : "jderror",
-                    fieldLabel  : _("Error"),
-                    submitValue : false,
-                    readOnly    : true,
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Last error recived, NONE is good")
-                    }]
-                },{
-                    xtype       : "textfield",
-                    name        : "uniqueid",
-                    fieldLabel  : _("Unique ID"),
-                    submitValue : false,
-                    readOnly    : true,
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Unique ID used by the webui.")
-                    }]
-                },{
-                border : false,
-                },{
-                    xtype       : "textfield",
-                    name        : "jdversion",
-                    fieldLabel  : _("Jdownloader Version"),
-                    submitValue : false,
-                    readOnly    : true,
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Current Jdownloader version.")
-                    }]
-                },{
-                border : false,
-                },{
-                    xtype       : "textfield",
-                    name        : "jdbuilddate",
-                    fieldLabel  : _("Build Date"),
-                    submitValue : false,
-                    readOnly    : true,
-                    plugins    : [{
-                        ptype : "fieldinfo",
-                        text  : _("Date current version was built")
-                    }]
-                },{
-                border : false,
-                },{
-                xtype   : "button",
-                name    : "update",
-                text    : _("Update"),
-                scope   : this,
-                handler : Ext.Function.bind(me.onUpdateButton, me, [ me ]),
-                margin  : "5 0 0 0"
+            },{
+                xtype      : "passwordfield",
+                name       : "jdpassword",
+                fieldLabel : _("Password"),
+                allowBlank : false,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Password used on my.jdownloader.org.")
+                }]
+            },{
+                ptype : "fieldinfo",
+                xtype      : "sharedfoldercombo",
+                name       : "download.sharedfolderref",
+                fieldLabel : _("Shared folder"),
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Make sure the group 'users' has read/write access to the shared folder.")
+                }]
+            },{
+                xtype      : "textfield",
+                name       : "download-dir",
+                fieldLabel : _("Directory"),
+                allowBlank : true,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Directory to store downloads.")
+                }]
+            }]
+            },{
+                xtype    : "fieldset",
+                title    : _("Jdownloader Infomation Panel"),
+                defaults : {
+                    labelSeparator:""
+                },
+                items      : [{
+                xtype      : "textfield",
+                name       : "jderror",
+                fieldLabel : _("Error"),
+                submitValue: false,
+                readOnly   : true,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Last error recived, NONE is good")
+                }]
+            },{
+                xtype       : "textfield",
+                name        : "uniqueid",
+                fieldLabel  : _("Unique ID"),
+                submitValue : false,
+                readOnly    : true,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Unique ID used by the webui.")
+                }]
             },{
                 border : false,
-                margin  : "5 5 5 5",
-                html   : _("Update Jdownloader, ONLY run when the webui says there are updates.")
+            },{
+                xtype       : "textfield",
+                name        : "jdversion",
+                fieldLabel  : _("Jdownloader Version"),
+                submitValue : false,
+                readOnly    : true,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Current Jdownloader version.")
+                }]
+            },{
+                border : false,
+            },{
+                xtype       : "textfield",
+                name        : "jdbuilddate",
+                fieldLabel  : _("Build Date"),
+                submitValue : false,
+                readOnly    : true,
+                plugins    : [{
+                    ptype : "fieldinfo",
+                    text  : _("Date current version was built")
+                }]
+            },{
+                border : false,
             }]
         }];
-    },
-
-    onUpdateButton: function() {
-        var me = this;
-        me.doSubmit();
-        Ext.create("OMV.window.Execute", {
-            title      : _("Update"),
-            rpcService : "Jdownloader",
-            rpcMethod  : "doUpdate",
-            listeners  : {
-                scope     : me,
-                exception : function(wnd, error) {
-                    OMV.MessageBox.error(null, error);
-                }
-            }
-        }).show();
     },
 });
 

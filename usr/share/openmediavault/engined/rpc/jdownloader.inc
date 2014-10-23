@@ -58,7 +58,6 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
     {
         $this->registerMethod("getSettings");
         $this->registerMethod("setSettings");
-        $this->registerMethod("doUpdate");
     }
 
     public function getSettings($params, $context)
@@ -194,54 +193,6 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             $object
         );
         return $object;
-    }
-
-    public function doUpdate($params, $context)
-    {
-        global $xmlConfig;
-
-        // Validate the RPC caller context.
-        $this->validateMethodContext($context, array(
-            "role" => OMV_ROLE_ADMINISTRATOR
-        ));
-
-        // Create a background process.
-        $bgStatusFilename = $this->createBgProcStatus();
-        $pid = $this->fork();
-
-        // Parent process.
-        if ($pid > 0) {
-            $this->initializeBgProcStatus($bgStatusFilename, $pid);
-            return $bgStatusFilename;
-        }
-
-        // Get the Jdownloader module
-        $moduleMgr = &OMVModuleMgr::getInstance();
-        $jdownloaderModule = $moduleMgr->getModule($this->getName());
-
-        // Child process.
-        try {
-            $jdownloaderModule->stopService();
-            $bgOutputFilename = $this->createBgProcOutput();
-            $this->updateBgProcStatus(
-                $bgStatusFilename,
-                "outputfilename",
-                $bgOutputFilename
-            );
-
-            $cmd = "omv-mkconf jdownloader update 2>&1";
-
-            $this->exec($cmd, $output, $bgOutputFilename);
-            $this->finalizeBgProcStatus($bgStatusFilename, $output);
-            //$jdownloaderModule->stopService();
-            $jdownloaderModule->startService();
-            exit(0);
-        } catch (Exception $e) {
-            $this->finalizeBgProcStatus($bgStatusFilename, "", $e);
-            //$jdownloaderModule->stopService();
-            $jdownloaderModule->startService();
-            exit(1);
-        }
     }
 }
 
