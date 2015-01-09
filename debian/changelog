@@ -1,3 +1,9 @@
+openmediavault-jdownloader (1.0.9) unstable; urgency=low
+
+  * Allow blank download folder
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 09 Jan 2015 18:06:00 -0500
+
 openmediavault-jdownloader (1.0.8) unstable; urgency=low
 
   * Add custom debian/control field XB-Plugin-Section

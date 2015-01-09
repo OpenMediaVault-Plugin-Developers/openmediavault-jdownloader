@@ -158,9 +158,12 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
             // Get the absolute shared folder path.
             $jdpath = OMVRpc::exec("ShareMgmt", "getPath", array(
                 "uuid" => $params["download.sharedfolderref"]), $context);
-
-            // Change valuse
-            $json_b['defaultdownloadfolder'] = $jdpath . "/" . $params["download-dir"];
+				
+			// Change valuse
+			if($params["download-dir"] !== '') {
+			    $json_b['defaultdownloadfolder'] = $jdpath . "/" . $params["download-dir"];
+			}else{
+			    $json_b['defaultdownloadfolder'] = $jdpath;
 
             file_put_contents($this->jdownloaderLocationFile, json_encode($json_b));
             if (!file_exists($json_b['defaultdownloadfolder'])) {
