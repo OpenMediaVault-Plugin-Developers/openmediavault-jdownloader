@@ -7,6 +7,9 @@ set -e
 
 case "$1" in
     configure)
+        SERVICE_XPATH_NAME="jdownloader"
+        SERVICE_XPATH="/config/services/${SERVICE_XPATH_NAME}"
+
         if ! getent passwd jdownloader >/dev/null 2>&1; then
             echo "Adding jdownloader user..."
             useradd --create-home --groups users --no-user-group --shell /usr/sbin/nologin jdownloader
@@ -31,30 +34,27 @@ case "$1" in
         chmod 775 /opt
         chown root:users /opt
 
-        if ! omv_config_exists "/config/services/jdownloader"; then
-            echo "Initial configuration."
-            object="<enable>0</enable>"
-            object="${object}<showtab>0</showtab>"
-            object="${object}<jderror></jderror>"
-            object="${object}<uniqueid></uniqueid>"
-            object="<download.sharedfolderref></download.sharedfolderref>"
-            object="${object}<download-dir></download-dir>"
-            omv_config_add_element "/config/services" "jdownloader" "${object}" true
+        if ! omv_config_exists "${SERVICE_XPATH}"; then
+            omv_config_add_element "/config/services" "${SERVICE_XPATH_NAME}"
+            omv_config_add_element "${SERVICE_XPATH}" "enable" "0"
+            omv_config_add_element "${SERVICE_XPATH}" "showtab" "0"
+            omv_config_add_element "${SERVICE_XPATH}" "jderror" ""
+            omv_config_add_element "${SERVICE_XPATH}" "uniqueid" ""
+            omv_config_add_element "${SERVICE_XPATH}" "download.sharedfolderref" ""
+            omv_config_add_element "${SERVICE_XPATH}" "download-dir" ""
         fi
 
         if ! omv_config_exists "/config/services/jdownloader/download.sharedfolderref"; then
-            echo "Extra configuration."
             object="<download.sharedfolderref></download.sharedfolderref>"
             object="${object}<download-dir></download-dir>"
             omv_config_add_element "/config/services" "jdownloader" "${object}" true
         fi
-
-        omv_install_fixperms
 
         # Activate package triggers. These triggers are only set during the
         # package installation.
         dpkg-trigger update-fixperms
         dpkg-trigger update-locale
+
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
@@ -65,5 +65,7 @@ case "$1" in
         exit 1
     ;;
 esac
+
+#DEBHELPER#
 
 exit 0

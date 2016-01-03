@@ -1,14 +1,17 @@
 Source: openmediavault-jdownloader
 Section: net
-XB-Plugin-Section: downloaders
 Priority: optional
 Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
 Build-Depends: debhelper (>= 9 )
-Standards-Version: 3.9.3
+Standards-Version: 3.9.6
+XB-Plugin-Section: downloaders
 
 Package: openmediavault-jdownloader
 Architecture: all
-Depends: ${misc:Depends}, openmediavault (>= 0.6), java7-runtime
+Depends: openmediavault (>= 3.0),
+         openjdk-6-jre-headless | openjdk-7-jre-headless | openjdk-8-jre-headless | openjdk-6-jre | openjdk-7-jre | openjdk-8-jre | java7-runtim-headlesse | java7-runtime,
+         ${misc:Depends}
+Homepage: http://my.jdownloader.org/index.html
 Description: OpenMediaVault Jdownloader plugin
  JDownloader is open source, platform independent and written completely in
  Java. It simplifies downloading files from One-Click-Hosters like

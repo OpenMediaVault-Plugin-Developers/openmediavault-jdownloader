@@ -1,7 +1,9 @@
 <?php
-
-/**
- * Copyright (C) 2013-2014 OpenMediaVault Plugin Developers
+/*
+ * @author    Volker Theile <volker.theile@openmediavault.org>
+ * @author    OpenMediaVault Plugin Developers <plugins@omv-extras.org>
+ * @copyright Copyright (c) 2009-2013 Volker Theile
+ * @copyright Copyright (c) 2015-2016 OpenMediaVault Plugin Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +18,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_once "openmediavault/object.inc";
 require_once "openmediavault/config.inc";
 require_once "openmediavault/error.inc";
-require_once "openmediavault/notify.inc";
-require_once "openmediavault/object.inc";
-require_once "openmediavault/product.inc";
-require_once "openmediavault/rpcservice.inc";
-require_once "openmediavault/system.inc";
 require_once "openmediavault/util.inc";
+require_once "openmediavault/rpcservice.inc";
+require_once "openmediavault/notify.inc";
+require_once("openmediavault/system.inc");
 
 class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
 {
@@ -46,7 +46,7 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
 
     private function getXPath()
     {
-        return sprintf("//services/%s", $this->getPluginName());
+        return sprintf("/config/services/%s", $this->getPluginName());
     }
 
     public function getName()
@@ -161,7 +161,11 @@ class OMVRpcServiceJdownloader extends OMVRpcServiceAbstract
 
             // Change valuse
             if($params["download-dir"] !== '') {
-                $json_b['defaultdownloadfolder'] = $jdpath . "/" . $params["download-dir"];
+                if (substr($jdpath, -1) === '/') {
+                    $json_b['defaultdownloadfolder'] = $jdpath . $params["download-dir"];
+                }else{
+                    $json_b['defaultdownloadfolder'] = $jdpath . "/" . $params["download-dir"];
+                }
             }else{
                 $json_b['defaultdownloadfolder'] = $jdpath;
             }

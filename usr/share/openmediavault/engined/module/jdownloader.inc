@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Copyright (C) 2013-2014 OpenMediaVault Plugin Developers
+ * Copyright (C) 2009-2013 Volker Theile <volker.theile@openmediavault.org>
+ * Copyright (C) 2013-2016 OpenMediaVault Plugin Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,16 +11,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 require_once "openmediavault/config.inc";
 require_once "openmediavault/error.inc";
-require_once "openmediavault/initscript.inc";
+require_once "openmediavault/systemctl.inc";
 require_once "openmediavault/module.inc";
 require_once "openmediavault/util.inc";
 
@@ -39,7 +40,7 @@ class OMVModuleJdownloader extends OMVModuleServiceAbstract implements
 
     private function getXPath()
     {
-        return sprintf("//services/%s", $this->getPluginName());
+        return sprintf("/config/services/%s", $this->getPluginName());
     }
 
     public function getName()
@@ -60,13 +61,13 @@ class OMVModuleJdownloader extends OMVModuleServiceAbstract implements
             );
         }
 
-        $initd = new OMVSysVInitScript($this->getPluginName());
+        $systemCtl = new OMVSystemCtl($this->getPluginName());
 
         return array(
             "name"    => $this->getPluginName(),
             "title"   => gettext($this->getName()),
             "enabled" => boolval($object["enable"]),
-            "running" => $initd->status() == 0
+            "running" => $systemCtl->isActive()
         );
     }
 
@@ -87,14 +88,14 @@ class OMVModuleJdownloader extends OMVModuleServiceAbstract implements
             return;
         }
 
-        $initd = new OMVSysVInitScript($this->getPluginName(), true);
-        $initd->exec();
+        $systemCtl = new OMVSystemCtl($this->getPluginName());
+        $systemCtl->enable(true);
     }
 
     public function stopService()
     {
-        $initd = new OMVSysVInitScript($this->getPluginName());
-        $initd->exec();
+        $systemCtl = new OMVSystemCtl($this->getPluginName());
+        $systemCtl->disable(true);
     }
 
     public function bindListeners(OMVNotifyDispatcher $dispatcher)
@@ -102,7 +103,7 @@ class OMVModuleJdownloader extends OMVModuleServiceAbstract implements
         $dispatcher->addListener(
             OMV_NOTIFY_MODIFY,
             $this->getEventMessagePath(),
-            array($this, "setDirty")
+            [ $this, "setDirty" ]
         );
     }
 }
