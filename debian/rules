@@ -21,7 +21,7 @@ binary-indep: install omv_clean_scm
 	dh_testroot
 	dh_installchangelogs
 	dh_installdebconf
-	dh_installinit --name=jdownloader
+	dh_systemd_enable --name=jdownloader
 	dh_lintian
 	dh_link
 	dh_compress

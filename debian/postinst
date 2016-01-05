@@ -7,13 +7,19 @@ set -e
 
 case "$1" in
     configure)
+        # Set the default settings of the service package to those expected by
+        # OpenMediaVault.
+        if [ -z "${2}" ]; then
+            systemctl stop jdownloader.service
+            systemctl disable jdownloader.service
+        fi
+
         SERVICE_XPATH_NAME="jdownloader"
         SERVICE_XPATH="/config/services/${SERVICE_XPATH_NAME}"
 
         if ! getent passwd jdownloader >/dev/null 2>&1; then
             echo "Adding jdownloader user..."
             useradd --create-home --groups users --no-user-group --shell /usr/sbin/nologin jdownloader
-            insserv -d jdownloader
         else
             echo "jdownloader user already exists."
         fi
@@ -22,7 +28,7 @@ case "$1" in
             echo "Cleaning old pid file..."
             rm -Rf /var/run/jdownloader
         fi
-		
+
         if [ ! -e /opt/jdownloader/JDownloader.jar ]; then
             echo "Extracting archive..."
             tar zxvf /opt/jdownloader/jdownloader.tar.gz -C /
