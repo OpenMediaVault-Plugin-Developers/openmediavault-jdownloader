@@ -22,8 +22,8 @@
 // require("js/omv/WorkspaceManager.js")
 // require("js/omv/workspace/panel/Panel.js")
 
-Ext.define("OMV.module.admin.service.jdownloader.WebInterface", {
-    extend : "OMV.workspace.panel.Panel",
+Ext.define('OMV.module.admin.service.jdownloader.WebInterface', {
+    extend : 'OMV.workspace.panel.Panel',
 
     initComponent : function() {
         var me = this;
@@ -31,13 +31,13 @@ Ext.define("OMV.module.admin.service.jdownloader.WebInterface", {
         OMV.Rpc.request({
             scope    : this,
             callback : function(id, success, response) {
-                var link = "http://my.jdownloader.org/?deviceId=" + response.uniqueid + "#webinterface:downloads";
-                me.html = "<iframe src='" + link + "' width='100%' height='100%' />";
+                var link = 'http://my.jdownloader.org/?deviceId=' + response.uniqueid + '#webinterface:downloads';
+                me.html = '<iframe src='' + link + '' width='100%' height='100%' />';
             },
             relayErrors : false,
             rpcData     : {
-                service  : "Jdownloader",
-                method   : "getSettings"
+                service  : 'Jdownloader',
+                method   : 'getSettings'
             }
         });
 
@@ -46,9 +46,9 @@ Ext.define("OMV.module.admin.service.jdownloader.WebInterface", {
 });
 
 OMV.WorkspaceManager.registerPanel({
-    id        : "webinterface",
-    path      : "/service/jdownloader",
-    text      : _("Web Interface"),
+    id        : 'webinterface',
+    path      : '/service/jdownloader',
+    text      : _('Web Interface'),
     position  : 20,
-    className : "OMV.module.admin.service.jdownloader.WebInterface"
+    className : 'OMV.module.admin.service.jdownloader.WebInterface'
 });

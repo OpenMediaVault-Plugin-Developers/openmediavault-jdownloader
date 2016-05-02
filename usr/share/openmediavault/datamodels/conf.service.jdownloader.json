@@ -1,0 +1,34 @@
+{
+    "type": "config",
+    "id": "conf.service.jdownloader",
+    "title": "JDownloader",
+    "queryinfo": {
+        "xpath": "/config/services/jdownloader",
+        "iterable": false
+    },
+    "properties": {
+        "enable": {
+            "type": "boolean",
+            "default": false
+        },
+        "showtab": {
+            "type": "boolean",
+            "default": true
+        },
+        "jdusername": {
+            "type": "string",
+            "default": ""
+        },
+        "jdpassword": {
+            "type": "string",
+            "default": ""
+        },
+        "download.sharedfolderref": {
+            "type": "string",
+            "default": false
+        },
+        "download-dir": {
+            "type": "string"
+        }
+    }
+}

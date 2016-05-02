@@ -1,0 +1,38 @@
+[{
+    "type": "rpc",
+    "id": "rpc.jdownloader.setsettings",
+    "params": {
+        "type": "object",
+        "properties": {
+            "enable": {
+                "type": "boolean",
+                "required": true
+            },
+            "showtab": {
+                "type": "boolean",
+                "required": true
+            },
+            "jdusername": {
+                "type": "string",
+                "required": true
+            },
+            "jdpassword": {
+                "type": "string",
+                "required": true
+            },
+            "download.sharedfolderref": {
+                "type": "boolean",
+                "required": true
+            },
+            "download-dir": {
+                "type": "string",
+                "format": "uuidv4",
+                "required": true
+            },
+            "enable_management_site": {
+                "type": "boolean",
+                "required": true
+            }
+        }
+    }
+}]

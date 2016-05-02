@@ -6,11 +6,12 @@ After=network.target
 WorkingDirectory=/opt/jdownloader/
 User=jdownloader
 Group=users
-Type=forking
+Type=simple
 UMask=000
 ExecStart=/usr/bin/java -Djava.awt.headless=true -jar JDownloader.jar
 RestartSec=15
 Restart=always
+StandardOutput=null
 
 [Install]
 WantedBy=multi-user.target

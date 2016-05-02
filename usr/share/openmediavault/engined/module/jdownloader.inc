@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright (C) 2009-2013 Volker Theile <volker.theile@openmediavault.org>
- * Copyright (C) 2013-2016 OpenMediaVault Plugin Developers
+ * Copyright (C) 2010-2012 Ian Moore <imooreyahoo@gmail.com>
+ * Copyright (C) 2013-2015 OpenMediaVault Plugin Developers.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,103 +11,129 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once "openmediavault/config.inc";
-require_once "openmediavault/error.inc";
-require_once "openmediavault/systemctl.inc";
-require_once "openmediavault/module.inc";
-require_once "openmediavault/util.inc";
+namespace OMV\Engined\Module;
 
-class OMVModuleJdownloader extends OMVModuleServiceAbstract implements
-    OMVINotifyListener,
-    OMVIModuleServiceStatus
+use OMV\Config\Database;
+use OMV\Engine\Module\IServiceStatus;
+use OMV\Engine\Module\Manager as ModuleManager;
+use OMV\Engine\Module\ServiceAbstract;
+use OMV\Engine\Notify\Dispatcher;
+use OMV\Engine\Notify\IListener;
+use OMV\System\Process;
+use OMV\System\SystemCtl;
+
+class jdownloader extends ServiceAbstract implements
+    IListener,
+    IServiceStatus
 {
-    private function getPluginName()
+    /** @var Database */
+    private $database;
+
+    /** @var string */
+    private $dataModelPath = 'conf.service.jdownloader';
+
+    /** @var string */
+    private $eventMessagePath = 'org.openmediavault.conf.services.jdownloader';
+
+    /** @var ModuleManager */
+    private $moduleManager;
+
+    /** @var string */
+    private $serviceName = 'jdownloader.service';
+
+    public function __construct(Database $database = null)
     {
-        return strtolower($this->getName());
+        $this->database = $database ?: Database::getInstance();
     }
 
-    private function getEventMessagePath()
-    {
-        return sprintf("org.openmediavault.service.%s", $this->getPluginName());
-    }
-
-    private function getXPath()
-    {
-        return sprintf("/config/services/%s", $this->getPluginName());
-    }
-
+    /**
+     * Get the module name.
+     *
+     * @return string
+     */
     public function getName()
     {
-        return "Jdownloader";
+        return 'jdownloader';
     }
 
+    /**
+     * Get the status of the managed service.
+     *
+     * @return array
+     */
     public function getStatus()
     {
-        global $xmlConfig;
+        $object = $this->database->get($this->dataModelPath);
+        $systemCtl = new SystemCtl($this->serviceName);
 
-        $object = $xmlConfig->get($this->getXPath());
-
-        if (is_null($object)) {
-            throw new OMVException(
-                OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
-                $this->getXPath()
-            );
-        }
-
-        $systemCtl = new OMVSystemCtl($this->getPluginName());
-
-        return array(
-            "name"    => $this->getPluginName(),
-            "title"   => gettext($this->getName()),
-            "enabled" => boolval($object["enable"]),
-            "running" => $systemCtl->isActive()
-        );
+        return [
+            'name' => $this->getName(),
+            'title' => gettext('JDownloader'),
+            'enabled' => $object->get('enable'),
+            'running' => $systemCtl->isActive(),
+        ];
     }
 
+    /**
+     * Generate the configuration.
+     *
+     * @return void
+     */
+    public function applyConfig()
+    {
+        $cmd = new Process('omv-mkconf', $this->getName());
+        $cmd->setRedirect2to1();
+        $cmd->execute();
+    }
+
+    /**
+     * Start the managed service.
+     *
+     * @return void
+     */
     public function startService()
     {
-        global $xmlConfig;
+        $object = $this->database->get($this->dataModelPath);
 
-        $object = $xmlConfig->get($this->getXPath());
-
-        if (is_null($object)) {
-            throw new OMVException(
-                OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
-                $this->getXPath()
-            );
+        if ($object->get('enable')) {
+            $systemCtl = new SystemCtl($this->serviceName);
+            $systemCtl->enable(true);
         }
-
-        if (!boolval($object["enable"])) {
-            return;
-        }
-
-        $systemCtl = new OMVSystemCtl($this->getPluginName());
-        $systemCtl->enable(true);
     }
 
+    /**
+     * Stop the managed service.
+     *
+     * @return void
+     */
     public function stopService()
     {
-        $systemCtl = new OMVSystemCtl($this->getPluginName());
+        $systemCtl = new SystemCtl($this->serviceName);
         $systemCtl->disable(true);
     }
 
-    public function bindListeners(OMVNotifyDispatcher $dispatcher)
+    /**
+     * Bind listeners.
+     *
+     * @param Dispatcher $dispatcher The dispatcher object.
+     *
+     * @return void
+     */
+    public function bindListeners(Dispatcher $dispatcher)
     {
+        $moduleManager = ModuleManager::getInstance();
+
         $dispatcher->addListener(
             OMV_NOTIFY_MODIFY,
-            $this->getEventMessagePath(),
-            [ $this, "setDirty" ]
+            $this->eventMessagePath,
+            [$this, 'setDirty']
         );
     }
 }
-
-// Register module
-$moduleMgr = &OMVModuleMgr::getInstance();
-$moduleMgr->registerModule(new OMVModuleJdownloader());

@@ -22,9 +22,9 @@
 // require("js/omv/WorkspaceManager.js")
 
 OMV.WorkspaceManager.registerNode({
-    id      : "jdownloader",
-    path    : "/service",
-    text    : _("Jdownloader"),
-    icon16  : "images/jdownloader.png",
-    iconSvg : "images/jdownloader.svg"
+    id      : 'jdownloader',
+    path    : '/service',
+    text    : _('Jdownloader'),
+    icon16  : 'images/jdownloader.png',
+    iconSvg : 'images/jdownloader.svg'
 });
