@@ -33,19 +33,16 @@ class jdownloader extends ServiceAbstract implements
     IListener,
     IServiceStatus
 {
-    /** @var Database */
     private $database;
 
-    /** @var string */
     private $dataModelPath = 'conf.service.jdownloader';
 
-    /** @var string */
     private $eventMessagePath = 'org.openmediavault.conf.services.jdownloader';
 
-    /** @var ModuleManager */
     private $moduleManager;
 
-    /** @var string */
+    private $jdownloaderService = '/lib/systemd/system/jdownloader.service';
+
     private $serviceName = 'jdownloader.service';
 
     public function __construct(Database $database = null)
@@ -53,21 +50,11 @@ class jdownloader extends ServiceAbstract implements
         $this->database = $database ?: Database::getInstance();
     }
 
-    /**
-     * Get the module name.
-     *
-     * @return string
-     */
     public function getName()
     {
         return 'jdownloader';
     }
 
-    /**
-     * Get the status of the managed service.
-     *
-     * @return array
-     */
     public function getStatus()
     {
         $object = $this->database->get($this->dataModelPath);
@@ -81,23 +68,6 @@ class jdownloader extends ServiceAbstract implements
         ];
     }
 
-    /**
-     * Generate the configuration.
-     *
-     * @return void
-     */
-    public function applyConfig()
-    {
-        $cmd = new Process('omv-mkconf', $this->getName());
-        $cmd->setRedirect2to1();
-        $cmd->execute();
-    }
-
-    /**
-     * Start the managed service.
-     *
-     * @return void
-     */
     public function startService()
     {
         $object = $this->database->get($this->dataModelPath);
@@ -108,24 +78,12 @@ class jdownloader extends ServiceAbstract implements
         }
     }
 
-    /**
-     * Stop the managed service.
-     *
-     * @return void
-     */
     public function stopService()
     {
         $systemCtl = new SystemCtl($this->serviceName);
         $systemCtl->disable(true);
     }
 
-    /**
-     * Bind listeners.
-     *
-     * @param Dispatcher $dispatcher The dispatcher object.
-     *
-     * @return void
-     */
     public function bindListeners(Dispatcher $dispatcher)
     {
         $moduleManager = ModuleManager::getInstance();

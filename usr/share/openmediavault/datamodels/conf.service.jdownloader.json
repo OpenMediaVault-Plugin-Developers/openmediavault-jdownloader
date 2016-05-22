@@ -13,7 +13,11 @@
         },
         "showtab": {
             "type": "boolean",
-            "default": true
+            "default": false
+        },
+        "enablelog": {
+            "type": "boolean",
+            "default": false
         },
         "jdusername": {
             "type": "string",
@@ -23,12 +27,28 @@
             "type": "string",
             "default": ""
         },
-        "download.sharedfolderref": {
+        "download-sharedfolderref": {
             "type": "string",
-            "default": false
+            "default": ""
         },
         "download-dir": {
             "type": "string"
+        },
+        "jderror": {
+            "type": "string",
+            "default": ""
+        },
+        "uniqueid": {
+            "type": "string",
+            "default": ""
+        },
+        "jdversion": {
+            "type": "string",
+            "default": ""
+        },
+        "jdbuilddate": {
+            "type": "string",
+            "default": ""
         }
     }
 }

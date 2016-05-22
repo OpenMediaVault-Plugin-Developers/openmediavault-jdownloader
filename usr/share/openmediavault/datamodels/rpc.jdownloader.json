@@ -8,6 +8,10 @@
                 "type": "boolean",
                 "required": true
             },
+            "enablelog": {
+                "type": "boolean",
+                "required": true
+            },
             "showtab": {
                 "type": "boolean",
                 "required": true
@@ -20,18 +24,30 @@
                 "type": "string",
                 "required": true
             },
-            "download.sharedfolderref": {
-                "type": "boolean",
-                "required": true
-            },
-            "download-dir": {
+            "download-sharedfolderref": {
                 "type": "string",
                 "format": "uuidv4",
                 "required": true
             },
-            "enable_management_site": {
-                "type": "boolean",
+            "download-dir": {
+                "type": "string",
                 "required": true
+            },
+            "jderror": {
+                "type": "string",
+                "default": ""
+            },
+            "uniqueid": {
+                "type": "string",
+                "default": ""
+            },
+            "jdversion": {
+                "type": "string",
+                "default": ""
+            },
+            "jdbuilddate": {
+                "type": "string",
+                "default": ""
             }
         }
     }

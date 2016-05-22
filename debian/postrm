@@ -7,18 +7,30 @@ set -e
 
 case "$1" in
     purge)
+        systemctl stop jdownloader.service
+
+        SERVICE_XPATH_NAME="jdownloader"
+        SERVICE_XPATH="/config/services/${SERVICE_XPATH_NAME}"
+
+        if omv_config_exists "${SERVICE_XPATH}"; then
+            omv_config_delete "${SERVICE_XPATH}"
+        fi
+
         if [ -d /opt/jdownloader ]; then
             rm -Rf /opt/jdownloader >/dev/null
         fi
 
-        omv_config_delete "/config/services/jdownloader"
-
-        userdel -r jdownloader
+        if getent passwd sickbeard >/dev/null 2>&1; then
+            userdel -rf jdownloader
+        fi
 
         if [ ! -d /opt ]; then
             mkdir /opt
             chmod 775 /opt
         fi
+    ;;
+
+    remove)
     ;;
 
         remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

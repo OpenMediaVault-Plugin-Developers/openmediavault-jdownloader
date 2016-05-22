@@ -56,6 +56,24 @@ Ext.define('OMV.module.admin.service.jdownloader.Settings', {
     rpcGetMethod : 'getSettings',
     rpcSetMethod : 'setSettings',
 
+    getButtonItems: function() {
+        var items = this.callParent(arguments);
+
+        items.push({
+            id: this.getId() + "-show",
+            xtype: "button",
+            text: _("Open Web Client"),
+            icon: "images/jdownloader.png",
+            iconCls: Ext.baseCSSPrefix + "btn-icon-16x16",
+            scope: this,
+            handler: function() {
+                var link = "http://my.jdownloader.org/";
+                window.open(link, "_blank");
+            }
+        });
+            return items;
+    },
+
     getFormItems : function() {
         var me = this;
         return [{
@@ -76,16 +94,11 @@ Ext.define('OMV.module.admin.service.jdownloader.Settings', {
                 boxLabel   : _('Show tab containing my.jdownloader site.'),
                 checked    : false
             },{
-                xtype   : 'button',
-                name    : 'openjdownloader',
-                text    : _('my.jdownloader site'),
-                scope   : this,
-                handler : function() {
-                    var me = this;
-                    var link = 'http://my.jdownloader.org/';
-                    window.open(link, '_blank');
-                },
-                margin  : '5 5 5 5'
+                xtype      : 'checkbox',
+                name       : 'enablelog',
+                fieldLabel : _('Logging'),
+                boxLabel   : _('Will create a log file in the download folder.'),
+                checked    : false
             }]
             },{
                 xtype    : 'fieldset',
@@ -115,11 +128,11 @@ Ext.define('OMV.module.admin.service.jdownloader.Settings', {
             },{
                 ptype : 'fieldinfo',
                 xtype      : 'sharedfoldercombo',
-                name       : 'download.sharedfolderref',
+                name       : 'download-sharedfolderref',
                 fieldLabel : _('Shared folder'),
                 plugins    : [{
                     ptype : 'fieldinfo',
-                    text  : _('Make sure the group 'users' has read/write access to the shared folder.')
+                    text  : _("Make sure the group 'users' has read/write access to the shared folder.")
                 }]
             },{
                 xtype      : 'textfield',

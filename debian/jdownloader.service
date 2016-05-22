@@ -3,15 +3,13 @@ Description=jdownloader
 After=network.target
 
 [Service]
-WorkingDirectory=/opt/jdownloader/
 User=jdownloader
 Group=users
+CPUQuota=20%
 Type=simple
 UMask=000
-ExecStart=/usr/bin/java -Djava.awt.headless=true -jar JDownloader.jar
-RestartSec=15
+ExecStart=/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar
 Restart=always
-StandardOutput=null
 
 [Install]
 WantedBy=multi-user.target

@@ -32,7 +32,7 @@ Ext.define('OMV.module.admin.service.jdownloader.WebInterface', {
             scope    : this,
             callback : function(id, success, response) {
                 var link = 'http://my.jdownloader.org/?deviceId=' + response.uniqueid + '#webinterface:downloads';
-                me.html = '<iframe src='' + link + '' width='100%' height='100%' />';
+                me.html = "<iframe src='' + link + '' width='100%' height='100%' />";
             },
             relayErrors : false,
             rpcData     : {
