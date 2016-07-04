@@ -72,6 +72,7 @@ class JDownloader extends ServiceAbstract
 
         $jdbuilddate = 'awaiting info';
         $jdversion   = 'awaiting info';
+
         if (file_exists($this->jdownloaderBuildFile)) {
             $string       = file_get_contents($this->jdownloaderBuildFile);
             $json_c       = json_decode($string,true);
@@ -80,14 +81,14 @@ class JDownloader extends ServiceAbstract
         }
 
         // Get current info as set in Jdownloader config file
-        $uniquedeviceid = 'awaiting info';
+        $uniquedeviceid = 'awaiting first restart';
         $jderror        = 'awaiting info';
         if (file_exists($this->jdownloaderSettingsFile)) {
             $string = file_get_contents($this->jdownloaderSettingsFile);
             $json_a = json_decode($string,true);
-            //if (isset($json_a['uniquedeviceid'])) {
-                $uniquedeviceid = $json_a['uniquedeviceid'];
-            //}
+            if (isset($json_a['uniquedeviceidv2'])) {
+                $uniquedeviceid = $json_a['uniquedeviceidv2'];
+            }
             $jderror = $json_a['latesterror'];
         }
 
@@ -119,9 +120,9 @@ class JDownloader extends ServiceAbstract
         if (file_exists($this->jdownloaderSettingsFile)) {
             $string = file_get_contents($this->jdownloaderSettingsFile);
             $json_a = json_decode($string,true);
-            //if (isset($json_a['uniquedeviceid'])) {
-            //    $uniquedeviceid = $json_a['uniquedeviceid'];
-            //}
+            if (isset($json_a['uniquedeviceidv2'])) {
+                $uniquedeviceid = $json_a['uniquedeviceidv2'];
+            }
 
             // Change valuse
             $json_a['email']     = $object->get("jdusername");
