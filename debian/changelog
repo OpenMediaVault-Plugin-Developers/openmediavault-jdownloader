@@ -1,3 +1,9 @@
+openmediavault-jdownloader (3.2.2) UNRELEASED; urgency=medium
+
+  * fix xml opening tag
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Wed, 06 Jul 2016 11:54:44 +0100
+
 openmediavault-jdownloader (3.2.1) stable; urgency=low
 
   * OMV 3.2 version

@@ -57,7 +57,7 @@ case "$1" in
         fi
 
         # Migrations.
-        if dpkg --compare-versions "$2" lt-nl "3.2"; then
+        if dpkg --compare-versions "$2" lt-nl "3.2.2"; then
             omv_config_rename "${SERVICE_XPATH}/download.sharedfolderref" "download-sharedfolderref"
         fi
 
