@@ -51,7 +51,7 @@ case "$1" in
         fi
 
         if ! omv_config_exists "/config/services/jdownloader/download-sharedfolderref"; then
-            object="<download.sharedfolderref></download-sharedfolderref>"
+            object="<download-sharedfolderref></download-sharedfolderref>"
             object="${object}<download-dir></download-dir>"
             omv_config_add_element "/config/services" "jdownloader" "${object}" true
         fi
