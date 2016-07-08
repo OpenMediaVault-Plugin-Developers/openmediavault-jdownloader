@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=jdownloader
 Group=users
-CPUQuota=20%
+CPUQuota=25%
 Type=simple
 UMask=000
 ExecStart=/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar

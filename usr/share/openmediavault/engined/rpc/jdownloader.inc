@@ -179,7 +179,7 @@ After=network.target
 [Service]
 User=jdownloader
 Group=users
-CPUQuota=20%
+CPUQuota=" . $object->get('cpuquota') . "%
 Type=simple
 UMask=000
 ExecStart=/bin/sh -c '/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar > " . $path . "/jdownloader.log 2>&1'
@@ -197,7 +197,7 @@ After=network.target
 [Service]
 User=jdownloader
 Group=users
-CPUQuota=20%
+CPUQuota=" . $object->get('cpuquota') . "%
 Type=simple
 UMask=000
 ExecStart=/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar

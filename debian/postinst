@@ -48,6 +48,7 @@ case "$1" in
             omv_config_add_element "${SERVICE_XPATH}" "uniqueid" ""
             omv_config_add_element "${SERVICE_XPATH}" "download-sharedfolderref" ""
             omv_config_add_element "${SERVICE_XPATH}" "download-dir" ""
+            omv_config_add_element "${SERVICE_XPATH}" "cpuquota" "25"
         fi
 
         if ! omv_config_exists "/config/services/jdownloader/download-sharedfolderref"; then
@@ -59,6 +60,9 @@ case "$1" in
         # Migrations.
         if dpkg --compare-versions "$2" lt-nl "3.2.2"; then
             omv_config_rename "${SERVICE_XPATH}/download.sharedfolderref" "download-sharedfolderref"
+        fi
+	if dpkg --compare-versions "$2" lt-nl "3.2.3"; then
+            omv_config_add_element "${SERVICE_XPATH}" "cpuquota" "25"
         fi
 
         # Activate package triggers. These triggers are only set during the

@@ -143,6 +143,18 @@ Ext.define('OMV.module.admin.service.jdownloader.Settings', {
                     ptype : 'fieldinfo',
                     text  : _('Directory to store downloads.')
                 }]
+            },{
+                xtype      : 'numberfield',
+                name       : 'cpuquota',
+                fieldLabel : _('CPU-quota'),
+		minValue: 10,
+		maxValue: 100,
+		allowDecimals: false,
+		allowBlank: false,
+                plugins    : [{
+                    ptype : 'fieldinfo',
+                    text  : _("sets how much of cpu % jdownloader can use")
+                }]
             }]
             },{
                 xtype    : 'fieldset',

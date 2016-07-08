@@ -48,6 +48,12 @@
             "jdbuilddate": {
                 "type": "string",
                 "default": ""
+            },
+            "cpuquota": {
+			"type": "integer",
+			"minimum": 10,
+			"maximum": 100,
+			"default": 25
             }
         }
     }
