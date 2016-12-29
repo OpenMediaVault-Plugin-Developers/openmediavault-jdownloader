@@ -7,7 +7,7 @@ set -e
 
 case "$1" in
     purge)
-        systemctl stop jdownloader.service
+        systemctl stop jdownloader.service || :
 
         SERVICE_XPATH_NAME="jdownloader"
         SERVICE_XPATH="/config/services/${SERVICE_XPATH_NAME}"
@@ -20,7 +20,7 @@ case "$1" in
             rm -Rf /opt/jdownloader >/dev/null
         fi
 
-        if getent passwd sickbeard >/dev/null 2>&1; then
+        if getent passwd jdownloader >/dev/null 2>&1; then
             userdel -rf jdownloader
         fi
 
