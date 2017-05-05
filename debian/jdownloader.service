@@ -6,10 +6,11 @@ After=network.target
 User=jdownloader
 Group=users
 CPUQuota=25%
-Type=simple
+Type=oneshot
 UMask=000
 ExecStart=/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar
-Restart=always
+RemainAfterExit=yes
+StandardOutput=null
 
 [Install]
 WantedBy=multi-user.target
