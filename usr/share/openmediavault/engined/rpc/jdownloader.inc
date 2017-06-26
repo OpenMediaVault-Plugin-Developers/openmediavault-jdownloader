@@ -99,7 +99,7 @@ class JDownloader extends ServiceAbstract
 
         return $object->getAssoc();
     }
-
+	
     public function setSettings($params, $context)
     {
         $this->validateMethodContext($context, ['role' => OMV_ROLE_ADMINISTRATOR]);
@@ -170,7 +170,10 @@ class JDownloader extends ServiceAbstract
         if (!file_exists($json_b['defaultdownloadfolder'])) {
             mkdir($json_b['defaultdownloadfolder'], 0777, true);
         }
-
+		
+		$numofcorescmd = "cat /proc/cpuinfo | grep processor | wc -l";
+		$numofcores = (int) exec($numofcorescmd);
+		$cpuquota = $object->get('cpuquota');
         if ($object->get('enablelog')) {
             file_put_contents($this->jdownloaderServiceFile, "[Unit]
 Description=jdownloader
@@ -179,7 +182,7 @@ After=network.target
 [Service]
 User=jdownloader
 Group=users
-CPUQuota=" . $object->get('cpuquota') . "%
+CPUQuota=" . $numofcores*$cpuquota . "%
 Type=simple
 UMask=000
 ExecStart=/bin/sh -c '/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar > " . $path . "/jdownloader.log 2>&1'
@@ -197,11 +200,12 @@ After=network.target
 [Service]
 User=jdownloader
 Group=users
-CPUQuota=" . $object->get('cpuquota') . "%
+CPUQuota=" . $numofcores*$cpuquota . "%
 Type=simple
 UMask=000
 ExecStart=/usr/bin/java -Djava.awt.headless=true -jar /opt/jdownloader/JDownloader.jar
 Restart=always
+RemainAfterExit=yes
 StandardOutput=null
 
 [Install]
