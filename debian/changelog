@@ -1,3 +1,9 @@
+openmediavault-jdownloader (3.2.4) UNRELEASED; urgency=low
+
+  * Make CPU quota setting relative to all cpu cores
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 01 Jan 2017 10:39:00 +0000
+
 openmediavault-jdownloader (3.2.3) UNRELEASED; urgency=low
 
   * Add option to change cpuquota on plugin page
